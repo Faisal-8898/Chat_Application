@@ -14,7 +14,7 @@ public class Database {
         MongoCollection<Document> usersCollection = database.getCollection("users");
         MongoCollection<Document> messagesCollection = database.getCollection("messages");
 
-        // Insert a new user document
+        // Insert a new user document there is 3 users
         Document user = new Document("username", "Alice")
                 .append("password", "mypassword")
                 .append("email", "alice@example.com");
