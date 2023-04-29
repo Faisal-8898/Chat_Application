@@ -1,91 +1,71 @@
 package Server;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.ArrayList;
+import java.util.HashMap;
 
-public class Server {
+public class Server implements Runnable {
+    Socket socket;
+public Server (Socket socket){
+    try{
+        this.socket=socket;
+    } catch (Exception e){
+        e.printStackTrace();
+    }
+}
 
-    private ServerSocket server;
-    private Socket socket;
-    private BufferedReader br;
-    private PrintWriter out;
-    private ExecutorService threadPool;
+ int i=0;
 
-    public Server() {
-        try {
-            server = new ServerSocket(7778);
-            System.out.println("Server is ready to accept connections");
-            System.out.println("Server is waiting...");
-            threadPool = Executors.newCachedThreadPool();
-            while (true) {
-                socket = server.accept();
-                handleClientConnection(socket);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (server != null) {
-                    server.close();
+public static HashMap client = new HashMap();
+
+public void run(){
+    try{
+        BufferedReader reader = new BufferedReader(new InputStreamReader(socket. getInputStream()));
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket. getOutputStream()));
+
+
+
+        client.put(i,writer);
+
+        i++;
+
+        while(true){
+            String msg = reader.readLine().trim();
+
+            for(int i=0; i<client.size(); i++) {
+                try {
+                    BufferedWriter bw = (BufferedWriter) client.get(i);
+                    bw.write(msg);
+                    bw.flush();
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private void handleClientConnection(Socket clientSocket) {
-        try {
-            br = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            out = new PrintWriter(clientSocket.getOutputStream());
-            threadPool.execute(() -> startReading(clientSocket));
-            threadPool.execute(() -> startWriting(clientSocket));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void startReading(Socket clientSocket) {
-        try {
-            System.out.println("Reader started for client " + clientSocket.getInetAddress());
-            BufferedReader br = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            String msg;
-            while ((msg = br.readLine()) != null) {
-                System.out.println("Client (" + clientSocket.getInetAddress() + "): " + msg);
-                if (msg.equals("exit")) {
-                    System.out.println("Client " + clientSocket.getInetAddress() + " has terminated the chat");
-                    clientSocket.close();
-                    break;
+                catch (Exception e){
+                    e.printStackTrace();
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Client " + i + ": " + msg);
         }
-    }
 
-    private void startWriting(Socket clientSocket) {
-        try {
-            System.out.println("Writer started for client " + clientSocket.getInetAddress());
-            PrintWriter out = new PrintWriter(clientSocket.getOutputStream());
-            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-            String content;
-            while ((content = br.readLine()) != null) {
-                out.println(content);
-                out.flush();
-                if (content.equals("exit")) {
-                    System.out.println("Server has terminated the chat with client " + clientSocket.getInetAddress());
-                    clientSocket.close();
-                    break;
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
+    catch(Exception e){
+        e.printStackTrace();
+    }
+}
+
 
     public static void main(String[] args) {
-        System.out.println("This is a server -- Welcome to Faiasl's server");
-        new Server();
+        try {
+            ServerSocket s = new ServerSocket(1234);
+            while (true) {
+                Socket socket = s.accept();
+                Server server = new Server(socket);
+                Thread thread = new Thread(server);
+                thread.start();
+            }
+        } catch(Exception e){
+            e.printStackTrace();
+        }
     }
 }
