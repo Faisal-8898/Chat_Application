@@ -27,13 +27,12 @@ private MongoDatabase database;
         messagesCollection.updateMany(messagesFilter, messagesUpdate);
     }
     
-    public void insertMessage(String messageId, String senderId, String recipientId, String message, String type, String status) {
+    public void insertMessage(String messageId, String senderId, String recipientId, String message,String status) {
         MongoCollection<Document> collection = database.getCollection("messages");
         Document doc = new Document("messageId", messageId)
             .append("senderId", senderId)
             .append("recipientId", recipientId)
             .append("message", message)
-            .append("type", type)
             .append("status", status)
             .append("timestamp", new Date());
         collection.insertOne(doc);
