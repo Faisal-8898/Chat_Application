@@ -4,63 +4,41 @@ import org.bson.Document;
 import java.util.*;
 
 public class Database {
-    public static void main(String[] args) {
-        // Connecting to the MongoDB host
-        MongoClient mongoClient = new MongoClient("localhost", 27017);
-
-        // Creating a database instance which connect to the ChatApp database in Mongodb
-        MongoDatabase database = mongoClient.getDatabase("ChatApp");
-
-        MongoCollection<Document> usersCollection = database.getCollection("users");
-        MongoCollection<Document> messagesCollection = database.getCollection("messages");
-
-        // Insert a new user document there is 3 users
-        Document user = new Document("username", "Alice")
-                .append("password", "mypassword")
-                .append("email", "alice@example.com");
-        usersCollection.insertOne(user);
-
-        Document user2 = new Document("username", "Bob")
-                .append("password", "mypasswordd")
-                .append("email", "bob@example.com");
-        usersCollection.insertOne(user2);
-
-        Document user3 = new Document("username", "Charlie")
-                .append("password", "mypassworddd")
-                .append("email", "Charlie@example.com");
-        usersCollection.insertOne(user3);
-
-        // Create a new message document
-        Document message = new Document()
-                .append("sender", "Alice")
-                .append("recipients", Arrays.asList("Bob", "Charlie"))
-                .append("message", "Hello, Bob and Charlie!")
-                .append("timestamp", new Date());
-
-        // Insert the message document into the "messages" collection
-        messagesCollection.insertOne(message);
-
-        // Query for users with a email address
-        Document query = new Document("email", "bob@example.com");
-        MongoCursor<Document> cursor = usersCollection.find(query).iterator();
-        try {
-            while (cursor.hasNext()) {
-                System.out.println(cursor.next().toJson());
-            }
-        } finally {
-            cursor.close();
-        }
-
-        // Update a user's password
-        Document filter = new Document("username", "alice");
-        Document update = new Document("$set", new Document("password", "newpassword"));
-        usersCollection.updateOne(filter, update);
-
-        // Delete a user document
-        filter = new Document("username", "bob");
-        usersCollection.deleteOne(filter);
-
-        // Close the connection
-        mongoClient.close();
+    
+private MongoDatabase database;
+    
+    public Database(MongoDatabase database) {
+        this.database = database;
     }
+    
+    public void updateUser(String userId, String name, String email, String password) {
+        MongoCollection<Document> collection = database.getCollection("users");
+        collection.updateOne(Filters.eq("userId", userId),
+            Updates.combine(
+                Updates.set("name", name),
+                Updates.set("email", email),
+                Updates.set("password", password)));
+        System.out.println("User with userId " + userId + " has been updated.");
+        
+        // Update the senderId in the messages collection
+        MongoCollection<Document> messagesCollection = database.getCollection("messages");
+        Document messagesFilter = new Document("senderId", userId);
+        Document messagesUpdate = new Document("$set", new Document("senderId", userId));
+        messagesCollection.updateMany(messagesFilter, messagesUpdate);
+    }
+    
+    public void insertMessage(String messageId, String senderId, String recipientId, String message,String status) {
+        MongoCollection<Document> collection = database.getCollection("messages");
+        Document doc = new Document("messageId", messageId)
+            .append("senderId", senderId)
+            .append("recipientId", recipientId)
+            .append("message", message)
+            .append("status", status)
+            .append("timestamp", new Date());
+        collection.insertOne(doc);
+        System.out.println("Message with ID " + messageId + " sent from " + senderId + " to " + recipientId + " saved in the database.");
+    }
+
 }
+
+   
