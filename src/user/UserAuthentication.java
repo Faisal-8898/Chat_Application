@@ -30,6 +30,7 @@ public class UserAuthentication {
             String savedPassword = userDoc.getString("password");
 
             if (savedPassword.equals(password)) {
+                // user id will have the unique id provided by mongo db;
                 String userId = userDoc.getObjectId("_id").toString();
                 mongoClient.close();
                 return true; // Login successful
