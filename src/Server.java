@@ -74,7 +74,7 @@ public class Server {
         server.start();
     }
 
-    private class ClientHandler extends Thread {
+    private static class ClientHandler extends Thread {
         private Socket socket;
         private BufferedReader inputStream;
         private PrintWriter outputStream;
