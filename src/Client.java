@@ -6,6 +6,7 @@ public class Client {
     private Socket socket;
     private PrintWriter outputStream;
     private BufferedReader inputStream;
+    private String receiverIndex; // Added field to store receiver index
 
     public Client(String serverAddress, int serverPort) {
         try {
@@ -35,19 +36,25 @@ public class Client {
             while ((message = consoleReader.readLine()) != null) {
                 if (message.equals("/ul")) {
                     outputStream.println(message);
-                } else if (message.startsWith("/talk")) {
+                }
+                if (message.startsWith("/talk")) {
+                    
                     String[] parts = message.split(" ");
-                    if (parts.length >= 3) {
-                        String receiverIndex = parts[1];
-                        String receiverMessage = message.substring(message.indexOf(receiverIndex) + receiverIndex.length() + 1);
-                        outputStream.println("/talk " + receiverIndex + " " + receiverMessage);
+                    if (parts.length >= 2) {
+                        receiverIndex = parts[1]; // Update the receiver index
                     } else {
-                        System.out.println("Invalid command. Please use the format: /talk <receiverIndex> <message>");
+                        System.out.println("Invalid command. Please use the format: /talk <receiverIndex>");
                     }
                 } else {
-                    outputStream.println(message);
+                    if (receiverIndex != null) {
+                        outputStream.println("/talk " + receiverIndex + " " + message);
+                    } else {
+                        System.out.println("No receiver index specified. Please use the command /talk <receiverIndex> to specify the recipient.");
+                    }
                 }
-            }
+            
+
+        }
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
