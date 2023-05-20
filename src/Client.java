@@ -36,7 +36,7 @@ public class Client {
             while ((message = consoleReader.readLine()) != null) {
                 if (message.equals("/ul")) {
                     outputStream.println(message);
-                }
+                }else{
                 if (message.startsWith("/talk")) {
                     
                     String[] parts = message.split(" ");
@@ -52,6 +52,7 @@ public class Client {
                         System.out.println("No receiver index specified. Please use the command /talk <receiverIndex> to specify the recipient.");
                     }
                 }
+            }
             
 
         }
