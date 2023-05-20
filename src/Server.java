@@ -30,7 +30,6 @@ public class Server {
                 clients.add(clientHandler);
                 clientHandler.start();
 
-                sendConnectedUsersToAllClients();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -48,7 +47,7 @@ public class Server {
     }
 
     public synchronized void sendConnectedUsersToAllClients() {
-        StringBuilder userList = new StringBuilder("Connected Users:\n");
+        StringBuilder userList = new StringBuilder("\nConnected Users:\n");
         for (int i = 0; i < clients.size(); i++) {
             ClientHandler client = clients.get(i);
             userList.append(i).append(". ").append(client.getUsername()).append("\n");
@@ -103,10 +102,12 @@ public class Server {
         @Override
         public void run() {
             try {
+    
                 username = inputStream.readLine();
 
                 // Notify all clients about the new user
                 server.sendConnectedUsersToAllClients();
+
 
                 String message;
                 while ((message = inputStream.readLine()) != null) {

@@ -24,8 +24,7 @@ public class Client {
 
         try {
             BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
-
-            // Prompt for a username
+            
             System.out.print("Enter your username: ");
             String username = consoleReader.readLine();
 
