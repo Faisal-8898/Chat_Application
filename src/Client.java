@@ -2,13 +2,29 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+import javax.swing.DefaultListModel;
+
 public class Client {
+    private boolean isAlive;
     private Socket socket;
     private PrintWriter outputStream;
     private BufferedReader inputStream;
-    private String receiverIndex; // Added field to store receiver index
+    private int receiverIndex = -1; // Added field to store receiver index
+    private ChatBoxFrame chatBoxFrame;
+   //a private ClientHandler clientHandler;
+
+    public PrintWriter getOutputStream() {
+        return outputStream;
+    }
+
+    public void setChatBoxFrame(ChatBoxFrame chatBoxFrame) {
+        this.chatBoxFrame = chatBoxFrame;
+    }
 
     public Client(String serverAddress, int serverPort) {
+        isAlive = true;
+        LoginFrame loginFrame = new LoginFrame(this);
+        loginFrame.setVisible(true);
         try {
             socket = new Socket(serverAddress, serverPort);
             outputStream = new PrintWriter(socket.getOutputStream(), true);
@@ -16,6 +32,10 @@ public class Client {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void end() {
+        isAlive = false;
     }
 
     public void start() {
@@ -41,12 +61,12 @@ public class Client {
                     
                     String[] parts = message.split(" ");
                     if (parts.length >= 2) {
-                        receiverIndex = parts[1]; // Update the receiver index
+                        receiverIndex = Integer.parseInt(parts[1]); // Update the receiver index
                     } else {
                         System.out.println("Invalid command. Please use the format: /talk <receiverIndex>");
                     }
                 } else {
-                    if (receiverIndex != null) {
+                    if (receiverIndex != -1) {
                         outputStream.println("/talk " + receiverIndex + " " + message);
                     } else {
                         System.out.println("No receiver index specified. Please use the command /talk <receiverIndex> to specify the recipient.");
@@ -73,16 +93,31 @@ public class Client {
         }
     }
 
+    private void updateJList(String[] userList) {
+        DefaultListModel<String> chatMemberList = chatBoxFrame.getChatMembersListModel();
+        for (String user : userList) {
+            if (!chatMemberList.contains(user))
+                chatMemberList.addElement(user);
+        }
+    }
+
+    private String[] getUserList(String message) {
+        String[] userList = message.split("\\|");
+        return userList;
+    }
+
     private class ServerReader implements Runnable {
         @Override
         public void run() {
             try {
                 String message;
-                while ((message = inputStream.readLine()) != null) {
-                    if (message.startsWith("Connected Users:")) {
+                while (isAlive && (message = inputStream.readLine()) != null) {
+                    if (message.startsWith("[uls]")) {
                         System.out.println(message);
-                    } else {
+                        updateJList(getUserList(message.substring(5)));
+                    } else if (message.startsWith("[msg]")) {
                         System.out.println(message);
+                        chatBoxFrame.getChatTextArea().append("From " + message.substring(5) + "\n");
                     }
                 }
             } catch (IOException e) {
@@ -99,5 +134,6 @@ public class Client {
 
         Client client = new Client(serverAddress, serverPort);
         client.start();
+        
     }
 }

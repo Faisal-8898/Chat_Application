@@ -2,6 +2,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -9,7 +10,13 @@ import javax.swing.event.ListSelectionListener;
 public class ChatBoxFrame extends JFrame {
     private DefaultListModel<String> chatMembersListModel;
     private JLabel selectedUserLabel;
+    private JTextArea chatTextArea;
     private String username;
+    private Client client;
+
+    public void setClient(Client client) {
+        this.client = client;
+    }
 
     public ChatBoxFrame(String username) {
         this.username=username;
@@ -29,7 +36,7 @@ public class ChatBoxFrame extends JFrame {
         // Create the chat panel on the right side
         JPanel chatPanel = new JPanel(new BorderLayout());
         JLabel usernameLabel = new JLabel(username);
-        JTextArea chatTextArea = new JTextArea();
+        chatTextArea = new JTextArea();
         chatTextArea.setEditable(false);
         JScrollPane chatScrollPane = new JScrollPane(chatTextArea);
         chatPanel.add(usernameLabel, BorderLayout.NORTH);
@@ -54,8 +61,18 @@ public class ChatBoxFrame extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String message = inputTextField.getText();
                 chatTextArea.append("To "+chatMembersList.getSelectedValue()+": " + message + "\n");
+                client.getOutputStream().println("/talk " + chatMembersList.getSelectedIndex() + " " + message);
                 inputTextField.setText("");
             }
+        });
+
+        inputTextField.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                sendButton.doClick();
+            }
+            
         });
 
         // ActionListener for the chat members list
@@ -68,8 +85,22 @@ public class ChatBoxFrame extends JFrame {
             }
         });
 
+        // addWindowListener(new WindowAdapter() {
+        //     @Override
+        //     public void windowClosing(WindowEvent e) {
+        //         client.end();
+        //     }
+        // });
+
         pack();
         setVisible(true);
+    }
+
+    public DefaultListModel<String> getChatMembersListModel() {
+        return chatMembersListModel;
+    }
+    public JTextArea getChatTextArea() {
+        return chatTextArea;
     }
 
     public void addChatMember(String memberName) {

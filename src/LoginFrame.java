@@ -5,8 +5,10 @@ import javax.swing.*;
 
 public class LoginFrame extends JFrame {
     private JTextField usernameTextField;
+    private Client client;
 
-    public LoginFrame() {
+    public LoginFrame(Client client) {
+        this.client = client;
         setTitle("ChatApp - Login");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setPreferredSize(new Dimension(400, 150));
@@ -35,12 +37,24 @@ public class LoginFrame extends JFrame {
         mainPanel.add(usernamePanel);
         mainPanel.add(enterButton);
 
+        usernameTextField.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                enterButton.doClick();
+            }
+            
+        });
+
         // ActionListener for the enter button
         enterButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String username = usernameTextField.getText();
                 dispose();
-                openChatBoxFrame(username);
+                ChatBoxFrame chatBoxFrame = new ChatBoxFrame(username);
+                chatBoxFrame.setClient(client);
+                client.setChatBoxFrame(chatBoxFrame);
+                client.getOutputStream().println(username);
             }
         });
 
@@ -49,23 +63,5 @@ public class LoginFrame extends JFrame {
 
         pack();
         setVisible(true);
-    }
-
-    private void openChatBoxFrame(String username) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                ChatBoxFrame chatBoxFrame = new ChatBoxFrame("user name : "+username);
-
-                //chatBoxFrame.addChatMember();
-            }
-        });
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                LoginFrame loginFrame = new LoginFrame();
-            }
-        });
     }
 }

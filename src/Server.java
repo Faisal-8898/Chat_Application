@@ -47,12 +47,14 @@ public class Server {
     }
 
     public synchronized void sendConnectedUsersToAllClients() {
-        StringBuilder userList = new StringBuilder("\nConnected Users:\n");
-        for (int i = 0; i < clients.size(); i++) {
+        StringBuilder userList = new StringBuilder();
+        userList.append("[uls]");
+        userList.append(clients.get(0).getUsername());
+        for (int i = 1; i < clients.size(); i++) {
             ClientHandler client = clients.get(i);
-            userList.append(i).append(". ").append(client.getUsername()).append("\n");
+            userList.append("|").append(client.getUsername());
         }
-
+        userList.append("\n");
         for (ClientHandler client : clients) {
             client.sendMessage(userList.toString());
         }
@@ -61,7 +63,7 @@ public class Server {
     public synchronized void sendMessageToClient(ClientHandler sender, int receiverIndex, String message) {
         if (receiverIndex >= 0 && receiverIndex < clients.size()) {
             ClientHandler client = clients.get(receiverIndex);
-            client.sendMessage("[" + sender.getUsername() + "]: " + message);
+            client.sendMessage("[msg]" + client.getUsername() + ": " + message);
         } else {
             sender.sendMessage("Invalid receiver index.");
         }
@@ -73,7 +75,7 @@ public class Server {
         server.start();
     }
 
-    private static class ClientHandler extends Thread {
+    private class ClientHandler extends Thread {
         private Socket socket;
         private BufferedReader inputStream;
         private PrintWriter outputStream;
