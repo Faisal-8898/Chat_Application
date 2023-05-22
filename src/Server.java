@@ -62,10 +62,16 @@ public class Server {
 
     public synchronized void sendMessageToClient(ClientHandler sender, int receiverIndex, String message) {
         if (receiverIndex >= 0 && receiverIndex < clients.size()) {
-            ClientHandler client = clients.get(receiverIndex);
-            client.sendMessage("[msg]" + client.getUsername() + ": " + message);
+            ClientHandler recievHandler = clients.get(receiverIndex);
+            recievHandler.sendMessage("[msg]" + sender.getUsername() + ": " + message);
         } else {
             sender.sendMessage("Invalid receiver index.");
+        }
+    }
+
+    public synchronized void sendMessageToAll(ClientHandler sender, String message) {
+        for (ClientHandler client : clients) {
+            client.sendMessage("[msg]" + sender.getUsername() + " to All: " + message);
         }
     }
 
@@ -121,7 +127,12 @@ public class Server {
                         } else {
                             sendMessage("Invalid command. Please use the format: /talk <receiverIndex> <message>");
                         }
-                    } else {
+                    } 
+                    else if(message.startsWith("/anno")){
+                        server.sendMessageToAll(this, message.substring(5));
+
+                    }
+                    else {
                         server.sendConnectedUsersToAllClients();
                     }
                 }

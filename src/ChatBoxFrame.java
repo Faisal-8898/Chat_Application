@@ -29,6 +29,7 @@ public class ChatBoxFrame extends JFrame {
         chatMembersPanel.setPreferredSize(new Dimension(150, getHeight()));
         JLabel chatMembersLabel = new JLabel("Active Chat Members");
         chatMembersListModel = new DefaultListModel<>();
+        chatMembersListModel.addElement("All");
         JList<String> chatMembersList = new JList<>(chatMembersListModel);
         chatMembersPanel.add(chatMembersLabel, BorderLayout.NORTH);
         chatMembersPanel.add(new JScrollPane(chatMembersList), BorderLayout.CENTER);
@@ -60,10 +61,19 @@ public class ChatBoxFrame extends JFrame {
         sendButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String message = inputTextField.getText();
+                if(chatMembersList.getSelectedValue()=="All"){
+                    chatTextArea.append("To All: " + message + "\n");
+                    client.getOutputStream().println("/anno" + message);
+
+                }else{
                 chatTextArea.append("To "+chatMembersList.getSelectedValue()+": " + message + "\n");
-                client.getOutputStream().println("/talk " + chatMembersList.getSelectedIndex() + " " + message);
+                client.getOutputStream().println("/talk " + (chatMembersList.getSelectedIndex()-1) + " " + message);
+          
+                }
                 inputTextField.setText("");
             }
+
+            
         });
 
         inputTextField.addActionListener(new ActionListener() {

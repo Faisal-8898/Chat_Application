@@ -22,7 +22,6 @@ public class Client {
     }
 
     public Client(String serverAddress, int serverPort) {
-        isAlive = true;
         LoginFrame loginFrame = new LoginFrame(this);
         loginFrame.setVisible(true);
         try {
@@ -32,10 +31,6 @@ public class Client {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public void end() {
-        isAlive = false;
     }
 
     public void start() {
@@ -94,7 +89,7 @@ public class Client {
     }
 
     private void updateJList(String[] userList) {
-        DefaultListModel<String> chatMemberList = chatBoxFrame.getChatMembersListModel();
+        DefaultListModel <String> chatMemberList = chatBoxFrame.getChatMembersListModel();
         for (String user : userList) {
             if (!chatMemberList.contains(user))
                 chatMemberList.addElement(user);
@@ -111,7 +106,7 @@ public class Client {
         public void run() {
             try {
                 String message;
-                while (isAlive && (message = inputStream.readLine()) != null) {
+                while ((message = inputStream.readLine()) != null) {
                     if (message.startsWith("[uls]")) {
                         System.out.println(message);
                         updateJList(getUserList(message.substring(5)));

@@ -52,7 +52,9 @@ public class LoginFrame extends JFrame {
                 String username = usernameTextField.getText();
                 if (username.isEmpty()) {
                     JOptionPane.showMessageDialog(LoginFrame.this, "Please enter your name", "Error", JOptionPane.ERROR_MESSAGE);
-                } else {
+                } else if (username.equals("All")) {
+                    JOptionPane.showMessageDialog(LoginFrame.this, "Invalid username!s", "Error", JOptionPane.ERROR_MESSAGE);
+                }else {
                 dispose();
                 ChatBoxFrame chatBoxFrame = new ChatBoxFrame(username);
                 chatBoxFrame.setClient(client);
