@@ -14,6 +14,17 @@ public class ChatBoxFrame extends JFrame {
     private String username;
     private Client client;
 
+    public String ctsnip(String snip){
+        String str;
+        str= "/ct Hello guys, \nToday we have a contest in CODEFORCES\nplease ensure your presence\nPractice more and more";
+        return str;
+    }
+    public String lbsnip(String snip){
+        String str;
+        str= "/ct Kew aso!, \nLast! lab korle keu pathay diyooo mail e";
+        return str;
+    }
+
     public void setClient(Client client) {
         this.client = client;
     }
