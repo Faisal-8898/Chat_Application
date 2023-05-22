@@ -124,7 +124,7 @@ public class Client {
     }
 
     public static void main(String[] args) {
-        String serverAddress = "192.168.12.63"; // Replace with the server address
+        String serverAddress = "localhost"; // Replace with the server address
         int serverPort = 1234; // Replace with the server port
 
         Client client = new Client(serverAddress, serverPort);

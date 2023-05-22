@@ -21,7 +21,7 @@ public class ChatBoxFrame extends JFrame {
     }
     public String lbsnip(String snip){
         String str;
-        str= "/ct Kew aso!, \nLast! lab korle keu pathay diyooo mail e";
+        str= "/lb Kew aso!, \nLast! lab korle keu pathay diyooo mail e";
         return str;
     }
 
