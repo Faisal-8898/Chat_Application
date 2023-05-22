@@ -104,12 +104,11 @@ public class Server {
         @Override
         public void run() {
             try {
-    
+
                 username = inputStream.readLine();
 
                 // Notify all clients about the new user
                 server.sendConnectedUsersToAllClients();
-
 
                 String message;
                 while ((message = inputStream.readLine()) != null) {

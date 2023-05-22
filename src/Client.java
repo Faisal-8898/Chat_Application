@@ -11,7 +11,7 @@ public class Client {
     private BufferedReader inputStream;
     private int receiverIndex = -1; // Added field to store receiver index
     private ChatBoxFrame chatBoxFrame;
-   //a private ClientHandler clientHandler;
+    // a private ClientHandler clientHandler;
 
     public PrintWriter getOutputStream() {
         return outputStream;
@@ -45,37 +45,37 @@ public class Client {
 
         try {
             BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
-            
-            System.out.print("Enter your username: ");
-            String username = consoleReader.readLine();
+
+            // System.out.print("Enter your username: ");
+            // String username = consoleReader.readLine();
 
             // Send the username to the server
-            outputStream.println(username);
+            // outputStream.println(username);
 
             String message;
             while ((message = consoleReader.readLine()) != null) {
                 if (message.equals("/ul")) {
                     outputStream.println(message);
-                }else{
-                if (message.startsWith("/talk")) {
-                    
-                    String[] parts = message.split(" ");
-                    if (parts.length >= 2) {
-                        receiverIndex = Integer.parseInt(parts[1]); // Update the receiver index
-                    } else {
-                        System.out.println("Invalid command. Please use the format: /talk <receiverIndex>");
-                    }
                 } else {
-                    if (receiverIndex != -1) {
-                        outputStream.println("/talk " + receiverIndex + " " + message);
+                    if (message.startsWith("/talk")) {
+
+                        String[] parts = message.split(" ");
+                        if (parts.length >= 2) {
+                            receiverIndex = Integer.parseInt(parts[1]); // Update the receiver index
+                        } else {
+                            System.out.println("Invalid command. Please use the format: /talk <receiverIndex>");
+                        }
                     } else {
-                        System.out.println("No receiver index specified. Please use the command /talk <receiverIndex> to specify the recipient.");
+                        if (receiverIndex != -1) {
+                            outputStream.println("/talk " + receiverIndex + " " + message);
+                        } else {
+                            System.out.println(
+                                    "No receiver index specified. Please use the command /talk <receiverIndex> to specify the recipient.");
+                        }
                     }
                 }
-            }
-            
 
-        }
+            }
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -134,6 +134,6 @@ public class Client {
 
         Client client = new Client(serverAddress, serverPort);
         client.start();
-        
+
     }
 }

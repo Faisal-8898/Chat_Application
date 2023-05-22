@@ -2,7 +2,6 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
-
 public class LoginFrame extends JFrame {
     private JTextField usernameTextField;
     private Client client;
@@ -20,16 +19,17 @@ public class LoginFrame extends JFrame {
         // Create the welcome label
         JLabel welcomeLabel = new JLabel("Welcome to ChatApp");
         welcomeLabel.setAlignmentX(CENTER_ALIGNMENT);
+        //welcomeLabel.setFont(new Font("MV Boli",Font.BOLD,30));
 
         // Create the username input components
         JPanel usernamePanel = new JPanel();
-        JLabel inputLabel = new JLabel("Please input username: ");
+        JLabel inputLabel = new JLabel("Please enter your name: ");
         usernameTextField = new JTextField(20);
         usernamePanel.add(inputLabel);
         usernamePanel.add(usernameTextField);
 
         // Create the enter button
-        JButton enterButton = new JButton("Enter");
+        JButton enterButton = new JButton("Let's Chat!");
         enterButton.setAlignmentX(CENTER_ALIGNMENT);
 
         // Add components to the main panel
@@ -50,11 +50,15 @@ public class LoginFrame extends JFrame {
         enterButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String username = usernameTextField.getText();
+                if (username.isEmpty()) {
+                    JOptionPane.showMessageDialog(LoginFrame.this, "Please enter your name", "Error", JOptionPane.ERROR_MESSAGE);
+                } else {
                 dispose();
                 ChatBoxFrame chatBoxFrame = new ChatBoxFrame(username);
                 chatBoxFrame.setClient(client);
                 client.setChatBoxFrame(chatBoxFrame);
                 client.getOutputStream().println(username);
+                }
             }
         });
 
@@ -62,6 +66,7 @@ public class LoginFrame extends JFrame {
         getContentPane().add(mainPanel);
 
         pack();
+        setLocationRelativeTo(null);
         setVisible(true);
     }
 }

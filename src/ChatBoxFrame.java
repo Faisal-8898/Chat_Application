@@ -35,7 +35,7 @@ public class ChatBoxFrame extends JFrame {
 
         // Create the chat panel on the right side
         JPanel chatPanel = new JPanel(new BorderLayout());
-        JLabel usernameLabel = new JLabel(username);
+        JLabel usernameLabel = new JLabel("User name: "+username);
         chatTextArea = new JTextArea();
         chatTextArea.setEditable(false);
         JScrollPane chatScrollPane = new JScrollPane(chatTextArea);
@@ -93,6 +93,7 @@ public class ChatBoxFrame extends JFrame {
         // });
 
         pack();
+        setLocationRelativeTo(null);
         setVisible(true);
     }
 
